@@ -1,0 +1,10 @@
+{
+	"admin/services/telegramopenwrt": {
+		"title": "Telegram Scripts",
+		"action": { "type": "view", "path": "telegramopenwrt" },
+		"depends": {
+			"acl": ["luci-app-telegramopenwrt"],
+			"uci": { "telegramopenwrt": true }
+		}
+	}
+}
