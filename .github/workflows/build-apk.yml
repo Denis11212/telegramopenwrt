@@ -1,11 +1,3 @@
-# Workflow do GitHub Actions: compila os pacotes telegram-openwrt e luci-app-telegramopenwrt como .apk
-# usando o SDK pre-compilado do OpenWrt (baixado de downloads.openwrt.org),
-# em vez de clonar e compilar o buildroot inteiro do zero. O SDK ja vem com
-# toolchain e ferramentas de host prontas, o que evita ter que compilar
-# gcc/libs do zero a cada build (muito mais rapido) e evita depender de
-# variaveis de ambiente para selecionar o target (o SDK ja e fixo para uma
-# arquitetura). Documentacao oficial: https://openwrt.org/docs/guide-developer/start
-
 name: Build telegram-openwrt (apk)
 
 on:
@@ -82,11 +74,18 @@ jobs:
           cp -R "${GITHUB_WORKSPACE}"/{Makefile,etc,sbin,usr} openwrt_sdk/package/${PACKAGE_NAME}/
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
-      - name: Drop LuCI package into SDK
+      - name: Drop LuCI package into SDK feeds
         run: |
-          mkdir -p openwrt_sdk/package/feeds/luci
-          cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt" openwrt_sdk/package/feeds/luci/
-          ls -lA openwrt_sdk/package/feeds/luci/luci-app-telegramopenwrt
+          # КРИТИЧНО: кладем в feeds/luci/applications/, а не в package/feeds/luci/
+          # чтобы ../../luci.mk в Makefile указывал на feeds/luci/luci.mk
+          mkdir -p openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
+          cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt/"* openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/
+          ls -lA openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
+
+      - name: Register LuCI package in feeds
+        working-directory: openwrt_sdk
+        run: |
+          ./scripts/feeds install ${LUCI_PACKAGE_NAME}
 
       - name: Generate .config
         working-directory: openwrt_sdk
