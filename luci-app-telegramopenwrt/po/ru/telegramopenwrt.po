@@ -1,0 +1,575 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-telegramopenwrt\n"
+"PO-Revision-Date: 2026-10-30 12:00+0300\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+# ============================================================
+# ЗАГОЛОВКИ И ОБЩИЕ
+# ============================================================
+msgid "Telegram Scripts for OpenWrt"
+msgstr "Telegram Scripts для OpenWrt"
+
+msgid "Telegram bot integration for OpenWrt. Manage bot settings, control the service, and monitor status."
+msgstr "Интеграция Telegram-бота для OpenWrt. Управление настройками бота, контроль службы и мониторинг статуса."
+
+# ============================================================
+# СТАТУС СЛУЖБЫ
+# ============================================================
+msgid "Service Status"
+msgstr "Состояние службы"
+
+msgid "Running"
+msgstr "Запущен"
+
+msgid "Stopped"
+msgstr "Остановлен"
+
+msgid "Start the service"
+msgstr "Запуск службы"
+
+msgid "Start"
+msgstr "Запустить"
+
+msgid "Restart the service"
+msgstr "Перезапуск службы"
+
+msgid "Restart"
+msgstr "Перезапустить"
+
+msgid "Stop the service"
+msgstr "Остановка службы"
+
+msgid "Stop"
+msgstr "Остановить"
+
+msgid "Autostart"
+msgstr "Автозапуск"
+
+msgid "Autostart enabled."
+msgstr "Автозапуск включён."
+
+msgid "Autostart disabled."
+msgstr "Автозапуск выключен."
+
+msgid "Service restarted with new settings."
+msgstr "Служба перезапущена с новыми настройками."
+
+msgid "Service restart requested, but it did not start. Check the logs."
+msgstr "Запрошен перезапуск службы, но она не запустилась. Проверьте логи."
+
+# ============================================================
+# ПРОВЕРКА БОТА И ЛОГИ
+# ============================================================
+msgid "Bot Connection & Logs"
+msgstr "Проверка бота и логи"
+
+msgid "Bot Connection Test"
+msgstr "Проверка соединения с ботом"
+
+msgid "Test Bot Connection"
+msgstr "Проверить соединение с ботом"
+
+msgid "Sends a getMe request to the Telegram Bot API to verify the token and connectivity."
+msgstr "Отправляет запрос getMe к Telegram Bot API для проверки токена и соединения."
+
+msgid "Testing…"
+msgstr "Проверка…"
+
+msgid "Bot connected successfully!"
+msgstr "Бот успешно подключен!"
+
+msgid "Username:"
+msgstr "Имя пользователя:"
+
+msgid "Bot ID:"
+msgstr "ID бота:"
+
+msgid "Bot test failed:"
+msgstr "Ошибка проверки бота:"
+
+msgid "Unknown error"
+msgstr "Неизвестная ошибка"
+
+msgid "Error: "
+msgstr "Ошибка: "
+
+msgid "Service Logs"
+msgstr "Логи службы"
+
+msgid "View Log (Live Tail)"
+msgstr "Просмотр лога (Live Tail)"
+
+msgid "Opens the system log with real-time updates (every 2 seconds)."
+msgstr "Открывает системный лог с обновлениями в реальном времени (каждые 2 секунды)."
+
+msgid "Telegram Bot Log — Live Tail"
+msgstr "Лог Telegram-бота — Live Tail"
+
+msgid "Start Live Tail"
+msgstr "Запустить Live Tail"
+
+msgid "Stop Live Tail"
+msgstr "Остановить Live Tail"
+
+msgid "Live tail active - updating every 2 seconds"
+msgstr "Live tail активен — обновление каждые 2 секунды"
+
+msgid "Live tail paused"
+msgstr "Live tail на паузе"
+
+msgid "Live tail stopped"
+msgstr "Live tail остановлен"
+
+msgid "Source: "
+msgstr "Источник: "
+
+msgid "Failed to read system log: "
+msgstr "Не удалось прочитать системный лог: "
+
+msgid "No telegram_bot entries found in system log. Make sure the service has been started at least once."
+msgstr "В системном логе не найдено записей telegram_bot. Убедитесь, что служба была запущена хотя бы один раз."
+
+msgid "Loading…"
+msgstr "Загрузка…"
+
+msgid "lines"
+msgstr "строк"
+
+msgid "Copy"
+msgstr "Копировать"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Log copied to clipboard."
+msgstr "Лог скопирован в буфер обмена."
+
+msgid "Copy failed. Please select text manually."
+msgstr "Не удалось скопировать. Выделите текст вручную."
+
+# ============================================================
+# ОПЦИОНАЛЬНЫЕ ЗАВИСИМОСТИ
+# ============================================================
+msgid "Optional Dependencies"
+msgstr "Опциональные зависимости"
+
+msgid "Missing recommended packages:"
+msgstr "Отсутствуют рекомендуемые пакеты:"
+
+msgid "Required for bot connection test. Install:"
+msgstr "Требуется для проверки соединения с ботом. Установка:"
+
+msgid "Required for HTTPS to Telegram API. Install:"
+msgstr "Требуется для HTTPS к Telegram API. Установка:"
+
+# ============================================================
+# ГЛОБАЛЬНЫЕ НАСТРОЙКИ
+# ============================================================
+msgid "Global Parameters"
+msgstr "Глобальные параметры"
+
+msgid "Bot Token"
+msgstr "Токен бота"
+
+msgid "Create a bot via"
+msgstr "Создайте бота через"
+
+msgid "and obtain a Bot token. Example:"
+msgstr "и получите токен бота. Пример:"
+
+msgid "Invalid token format. Expected: 123456789:ABCdefGHI…"
+msgstr "Неверный формат токена. Ожидается: 123456789:ABCdefGHI…"
+
+msgid "Bot URL API"
+msgstr "URL API бота"
+
+msgid "Must be http:// or https:// URL"
+msgstr "Должен быть URL вида http:// или https://"
+
+msgid "Chat ID"
+msgstr "ID чата"
+
+msgid "Get your Chat ID from"
+msgstr "Получите свой Chat ID из"
+
+msgid "Telegram documentation"
+msgstr "документации Telegram"
+
+msgid "Must be a number (negative for groups/channels)"
+msgstr "Должно быть числом (отрицательное для групп/каналов)"
+
+msgid "Connection Timeout (seconds)"
+msgstr "Таймаут соединения (секунды)"
+
+msgid "Must be a positive whole number"
+msgstr "Должно быть положительное целое число"
+
+msgid "MAC Addresses Ignore List File"
+msgstr "Файл списка игнорируемых MAC-адресов"
+
+msgid "Path to file with MAC addresses that will not trigger notifications."
+msgstr "Путь к файлу с MAC-адресами, которые не будут вызывать уведомления."
+
+msgid "Edit Ignore List"
+msgstr "Редактировать список игнорирования"
+
+msgid "Edit the file with MAC addresses that will not trigger notifications. One MAC address per line."
+msgstr "Редактирование файла с MAC-адресами, которые не будут вызывать уведомления. Один MAC-адрес на строку."
+
+msgid "Edit MAC Ignore List"
+msgstr "Редактирование списка игнорируемых MAC-адресов"
+
+msgid "One MAC address per line. Devices with these MAC addresses will not trigger DHCP/port notifications from the bot."
+msgstr "Один MAC-адрес на строку. Устройства с этими MAC-адресами не будут вызывать уведомления бота о DHCP/портах."
+
+msgid "File does not exist yet. It will be created when you save."
+msgstr "Файл ещё не существует. Он будет создан при сохранении."
+
+msgid "Failed to read file: "
+msgstr "Не удалось прочитать файл: "
+
+msgid "Failed to save: "
+msgstr "Не удалось сохранить: "
+
+msgid "File saved successfully!"
+msgstr "Файл успешно сохранён!"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+# ============================================================
+# IP-КАМЕРА (с описаниями)
+# ============================================================
+msgid "IP Camera Configuration"
+msgstr "Настройка IP-камеры"
+
+msgid "Settings for IP camera integration. Used by commands /cam_movie, /cam_shot, /cam_vdo, /cam_mv. Camera must support /snapshot.cgi and /videostream.asf endpoints (typical for D-Link, Foscam, and similar IP cameras)."
+msgstr "Настройки интеграции с IP-камерой. Используется командами /cam_movie, /cam_shot, /cam_vdo, /cam_mv. Камера должна поддерживать эндпоинты /snapshot.cgi и /videostream.asf (типично для D-Link, Foscam и подобных IP-камер)."
+
+msgid "Camera IP or Hostname"
+msgstr "IP или имя хоста камеры"
+
+msgid "IP address or hostname of your IP camera. Example: 192.168.1.100 or cam.local"
+msgstr "IP-адрес или имя хоста вашей IP-камеры. Пример: 192.168.1.100 или cam.local"
+
+msgid "Camera Username"
+msgstr "Имя пользователя камеры"
+
+msgid "Username for camera authentication. Used in URL parameters for snapshot and video stream requests."
+msgstr "Имя пользователя для аутентификации камеры. Используется в параметрах URL при запросах снимков и видеопотоков."
+
+msgid "Camera Password"
+msgstr "Пароль камеры"
+
+msgid "Password for camera authentication. Used in URL parameters for snapshot and video stream requests."
+msgstr "Пароль для аутентификации камеры. Используется в параметрах URL при запросах снимков и видеопотоков."
+
+msgid "HTTP Authentication Header Value"
+msgstr "Значение заголовка HTTP-аутентификации"
+
+msgid "HTTP Basic Auth header value (base64-encoded \"username:password\"). Used for cameras that require header-based authentication instead of URL parameters."
+msgstr "Значение заголовка HTTP Basic Auth (base64-кодированное «username:password»). Используется для камер, требующих аутентификации через заголовок, а не через параметры URL."
+
+# ============================================================
+# SMTP (с описаниями)
+# ============================================================
+msgid "SMTP Email Notifications"
+msgstr "SMTP Email-уведомления"
+
+msgid "Email notification settings. When an unauthorized user (not matching your Chat ID) tries to interact with the bot, an email alert is sent via ssmtp. Requires ssmtp package to be installed and configured on the router."
+msgstr "Настройки email-уведомлений. Когда неавторизованный пользователь (не совпадающий с вашим Chat ID) пытается взаимодействовать с ботом, через ssmtp отправляется email-оповещение. Требуется установленный и настроенный пакет ssmtp на роутере."
+
+msgid "E-Mail Sender Address"
+msgstr "Адрес отправителя"
+
+msgid "Email address that will appear as the sender. Example: router@example.com"
+msgstr "Email-адрес, который будет отображаться как отправитель. Пример: router@example.com"
+
+msgid "E-Mail Recipient Address"
+msgstr "Адрес получателя"
+
+msgid "Email address where unauthorized access alerts will be sent. This should be your email address."
+msgstr "Email-адрес, на который будут отправляться оповещения о несанкционированном доступе. Это должен быть ваш email-адрес."
+
+# ============================================================
+# ТЕЛЕВИЗОР (с описаниями)
+# ============================================================
+msgid "Television Settings"
+msgstr "Настройки телевизора"
+
+msgid "Settings for sending messages to Samsung Smart TV via SOAP API (MessageBoxService on port 52235). Only works with Samsung Smart TVs that support this service. Used by the /msg_tv command."
+msgstr "Настройки для отправки сообщений на Samsung Smart TV через SOAP API (MessageBoxService на порту 52235). Работает только с Samsung Smart TV, поддерживающими эту службу. Используется командой /msg_tv."
+
+msgid "TV Device IP Address"
+msgstr "IP-адрес телевизора"
+
+msgid "IP address of your Samsung Smart TV. The TV must be on the same network and have MessageBoxService enabled."
+msgstr "IP-адрес вашего Samsung Smart TV. Телевизор должен находиться в той же сети и иметь включённую службу MessageBoxService."
+
+msgid "Sender Name"
+msgstr "Имя отправителя"
+
+msgid "Name that will appear as the sender of the message on the TV screen. Example: \"Router\" or \"Admin\""
+msgstr "Имя, которое будет отображаться как отправитель сообщения на экране телевизора. Пример: «Router» или «Admin»"
+
+msgid "Sender Number"
+msgstr "Номер отправителя"
+
+msgid "Phone number or identifier for the sender. Example: \"+1234567890\" or \"ROUTER\""
+msgstr "Номер телефона или идентификатор отправителя. Пример: «+1234567890» или «ROUTER»"
+
+msgid "Receiver Name"
+msgstr "Имя получателя"
+
+msgid "Name that will appear as the recipient of the message on the TV screen. Example: \"User\" or \"Family\""
+msgstr "Имя, которое будет отображаться как получатель сообщения на экране телевизора. Пример: «User» или «Family»"
+
+msgid "Receiver Number"
+msgstr "Номер получателя"
+
+msgid "Phone number or identifier for the recipient. Example: \"+0987654321\" or \"TV\""
+msgstr "Номер телефона или идентификатор получателя. Пример: «+0987654321» или «TV»"
+
+# ============================================================
+# ПРОКСИ-СЕРВЕР
+# ============================================================
+msgid "Proxy Server"
+msgstr "Прокси-сервер"
+
+msgid "Warning:"
+msgstr "Предупреждение:"
+
+msgid "The proxy server parameters (IP address, network, interface, firewall mark) are hardcoded in the script"
+msgstr "Параметры прокси-сервера (IP-адрес, сеть, интерфейс, метка файрвола) захардкожены в скрипте"
+
+msgid "To change them, edit the file directly via SSH. The switches below only enable/disable the iptables rules."
+msgstr "Для их изменения отредактируйте файл напрямую через SSH. Переключатели ниже лишь включают/выключают правила iptables."
+
+msgid "Current hardcoded values:"
+msgstr "Текущие захардкоженные значения:"
+
+msgid "Enable HTTP Proxy"
+msgstr "Включить HTTP-прокси"
+
+msgid "Enable HTTPS Proxy"
+msgstr "Включить HTTPS-прокси"
+
+msgid "True"
+msgstr "Включено"
+
+msgid "False"
+msgstr "Выключено"
+
+# ============================================================
+# СПРАВОЧНИК КОМАНД БОТА
+# ============================================================
+msgid "Bot Commands Reference"
+msgstr "Справочник команд бота"
+
+msgid "Available Commands"
+msgstr "Доступные команды"
+
+msgid "Send these commands to your bot in Telegram. Use the search box to filter."
+msgstr "Отправляйте эти команды вашему боту в Telegram. Используйте поле поиска для фильтрации."
+
+msgid "Search commands…"
+msgstr "Поиск команд…"
+
+msgid "commands total"
+msgstr "команд всего"
+
+msgid "No commands found matching your search."
+msgstr "Команды по вашему запросу не найдены."
+
+msgid "Command"
+msgstr "Команда"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Category"
+msgstr "Категория"
+
+# Категории
+msgid "General"
+msgstr "Общие"
+
+msgid "IP Camera"
+msgstr "IP-камера"
+
+msgid "ChromeGo"
+msgstr "ChromeGo"
+
+msgid "Firewall"
+msgstr "Файрвол"
+
+msgid "Network"
+msgstr "Сеть"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Smart Home"
+msgstr "Умный дом"
+
+msgid "Proxy"
+msgstr "Прокси"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+# ============================================================
+# ОПИСАНИЯ КОМАНД БОТА
+# ============================================================
+msgid "Display help menu"
+msgstr "Показать меню помощи"
+
+msgid "Record 25 seconds of a camIP and send it"
+msgstr "Записать 25 секунд с IP-камеры и отправить"
+
+msgid "Move the camera around"
+msgstr "Перемещать камеру"
+
+msgid "Get a picture from the camera"
+msgstr "Получить снимок с камеры"
+
+msgid "Get a 25 seconds recording from a camIP"
+msgstr "Получить 25-секундную запись с IP-камеры"
+
+msgid "Include a word to be blocked in ChromeGo permissions"
+msgstr "Добавить слово для блокировки в разрешениях ChromeGo"
+
+msgid "Remove a word from ChromeGo permissions"
+msgstr "Удалить слово из разрешений ChromeGo"
+
+msgid "List all ChromeGo permissions"
+msgstr "Показать все разрешения ChromeGo"
+
+msgid "Block a hostname using a deny rule in the firewall (optional: hours 23:00–08:00)"
+msgstr "Заблокировать имя хоста правилом запрета в файрволе (опционально: часы 23:00–08:00)"
+
+msgid "Remove a hostname from a deny firewall rule"
+msgstr "Удалить имя хоста из правила запрета файрвола"
+
+msgid "Disable a firewall rule"
+msgstr "Отключить правило файрвола"
+
+msgid "Enable a firewall rule"
+msgstr "Включить правило файрвола"
+
+msgid "List all firewall rules"
+msgstr "Показать все правила файрвола"
+
+msgid "Remove hostname from deny firewall rule (or all if no hostname)"
+msgstr "Удалить имя хоста из правила запрета файрвола (или все, если имя не указано)"
+
+msgid "Disable a redirect firewall rule"
+msgstr "Отключить правило перенаправления файрвола"
+
+msgid "Enable a redirect firewall rule"
+msgstr "Включить правило перенаправления файрвола"
+
+msgid "List all redirect firewall rules"
+msgstr "Показать все правила перенаправления файрвола"
+
+msgid "Get the WAN IP Address"
+msgstr "Получить внешний WAN IP-адрес"
+
+msgid "Get the organization owning the MAC address"
+msgstr "Получить организацию-владельца MAC-адреса"
+
+msgid "Ping an address or host, returns Up or Down"
+msgstr "Пинг адреса или хоста, возвращает «Доступен» или «Недоступен»"
+
+msgid "Return the uptime of this device"
+msgstr "Вернуть время работы этого устройства"
+
+msgid "Get DHCP leased hosts"
+msgstr "Получить список DHCP-аренд"
+
+msgid "Add a MAC address to the allowlist (no notifications)"
+msgstr "Добавить MAC-адрес в список разрешённых (без уведомлений)"
+
+msgid "Show the list of ignored MAC addresses"
+msgstr "Показать список игнорируемых MAC-адресов"
+
+msgid "Shut down an interface by its name"
+msgstr "Выключить интерфейс по его имени"
+
+msgid "Restart an interface by its name"
+msgstr "Перезапустить интерфейс по его имени"
+
+msgid "Start up an interface by its name"
+msgstr "Включить интерфейс по его имени"
+
+msgid "Get interfaces configuration"
+msgstr "Получить конфигурацию интерфейсов"
+
+msgid "Turn on/off household lights"
+msgstr "Включить/выключить домашнее освещение"
+
+msgid "Send a message to a Samsung TV"
+msgstr "Отправить сообщение на телевизор Samsung"
+
+msgid "Print network statistics (established, closed, timed wait)"
+msgstr "Вывести сетевую статистику (установленные, закрытые, ожидающие соединения)"
+
+msgid "Install a package via OPKG"
+msgstr "Установить пакет через OPKG"
+
+msgid "Update the list of available packages"
+msgstr "Обновить список доступных пакетов"
+
+msgid "Create a UDP packet to punch a hole through NAT firewalls"
+msgstr "Создать UDP-пакет для пробива отверстия в NAT-файрволах"
+
+msgid "List all running processes"
+msgstr "Показать все запущенные процессы"
+
+msgid "Restart a process in init.d"
+msgstr "Перезапустить процесс из init.d"
+
+msgid "Start a process in init.d"
+msgstr "Запустить процесс из init.d"
+
+msgid "Stop a process in init.d"
+msgstr "Остановить процесс из init.d"
+
+msgid "Disable HTTP and/or HTTPS proxy"
+msgstr "Отключить HTTP и/или HTTPS прокси"
+
+msgid "Enable HTTP and/or HTTPS proxy"
+msgstr "Включить HTTP и/или HTTPS прокси"
+
+msgid "List enabled proxy rules"
+msgstr "Показать включённые правила прокси"
+
+msgid "Reboot the router"
+msgstr "Перезагрузить роутер"
+
+msgid "List switch ports with their current states"
+msgstr "Показать порты коммутатора с их текущими состояниями"
+
+msgid "Disable a wireless device radio"
+msgstr "Отключить радио беспроводного устройства"
+
+msgid "Enable a wireless device radio"
+msgstr "Включить радио беспроводного устройства"
+
+msgid "List all wireless devices"
+msgstr "Показать все беспроводные устройства"
+
+msgid "Restart a wireless device radio"
+msgstr "Перезапустить радио беспроводного устройства"
+
+msgid "Get a list of Wi-Fi clients connected to this device"
+msgstr "Получить список Wi-Fi клиентов, подключённых к этому устройству"
