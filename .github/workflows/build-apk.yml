@@ -62,17 +62,11 @@ jobs:
           mkdir -p openwrt_sdk
           tar --use-compress-program=unzstd -xf "${SDK_FILE}" -C openwrt_sdk --strip-components=1
 
-      - name: Update feeds
-        working-directory: openwrt_sdk
-        run: ./scripts/feeds update -a
-
-      # КРИТИЧНО: Устанавливаем ТОЛЬКО luci feed, чтобы избежать recursive dependency ошибок
-      # в сторонних пакетах (nginx-mod-*, curl, gensio и т.д.)
-      - name: Install luci feed only
+      - name: Update and install feeds
         working-directory: openwrt_sdk
         run: |
-          echo "=== Installing luci feed packages ==="
-          ./scripts/feeds install -a -p luci
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
 
       - name: Drop main package into SDK
         run: |
@@ -80,30 +74,16 @@ jobs:
           cp -R "${GITHUB_WORKSPACE}"/{Makefile,etc,sbin,usr} openwrt_sdk/package/${PACKAGE_NAME}/
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
-      # КРИТИЧНО: Копируем LuCI пакет в feeds/luci/applications/
-      # Путь ../../luci.mk в Makefile должен указывать на feeds/luci/luci.mk
-      - name: Copy LuCI package to feeds directory
+      # КРИТИЧНО: Копируем LuCI пакет в package/ (НЕ в feeds/luci/applications/)
+      - name: Copy LuCI package to package directory
         run: |
-          mkdir -p openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
+          mkdir -p openwrt_sdk/package/${LUCI_PACKAGE_NAME}
           cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt/"* \
-                openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/
+                openwrt_sdk/package/${LUCI_PACKAGE_NAME}/
           echo "=== LuCI package contents ==="
-          ls -lA openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
+          ls -lA openwrt_sdk/package/${LUCI_PACKAGE_NAME}
           echo "=== Makefile ==="
-          cat openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/Makefile
-
-      # КРИТИЧНО: Регистрируем пакет через feeds install
-      # Это создаёт symlink package/feeds/luci/luci-app-telegramopenwrt
-      # -> feeds/luci/applications/luci-app-telegramopenwrt
-      - name: Register LuCI package in feeds
-        working-directory: openwrt_sdk
-        run: |
-          echo "=== Registering LuCI package ==="
-          ./scripts/feeds install ${LUCI_PACKAGE_NAME}
-          echo "=== Checking symlink ==="
-          ls -la package/feeds/luci/ | grep telegram || echo "WARNING: symlink not found!"
-          echo "=== Verifying Makefile path ==="
-          ls -la package/feeds/luci/${LUCI_PACKAGE_NAME}/Makefile || echo "ERROR: Makefile not accessible!"
+          cat openwrt_sdk/package/${LUCI_PACKAGE_NAME}/Makefile
 
       - name: Generate .config
         working-directory: openwrt_sdk
@@ -112,23 +92,24 @@ jobs:
           CONFIG_LUCI_NAME="CONFIG_PACKAGE_${LUCI_PACKAGE_NAME}"
           echo "${CONFIG_PKG_NAME}=m" > .config
           echo "${CONFIG_LUCI_NAME}=m" >> .config
-          echo "=== Running make defconfig ==="
+          echo "=== Running make defconfig (warnings are expected) ==="
           make defconfig
-          echo "=== Package selection in .config ==="
+          echo "=== Selecao dos pacotes no .config final ==="
           grep -E "${CONFIG_PKG_NAME}|${CONFIG_LUCI_NAME}" .config
 
       - name: Compile main package
         working-directory: openwrt_sdk
         run: make package/${PACKAGE_NAME}/compile V=s -j"$(nproc)"
 
+      # КРИТИЧНО: Собираем из package/ (не из package/feeds/luci/)
       - name: Compile LuCI package
         working-directory: openwrt_sdk
-        run: make package/feeds/luci/${LUCI_PACKAGE_NAME}/compile V=s -j"$(nproc)"
+        run: make package/${LUCI_PACKAGE_NAME}/compile V=s -j"$(nproc)"
 
       - name: Locate generated .apk files
         working-directory: openwrt_sdk
         run: |
-          echo "=== Generated .apk files ==="
+          echo "=== Arquivos .apk gerados ==="
           find bin/packages -name "*.apk" -print
           find bin/packages -name "${PACKAGE_NAME}*.apk" -print -quit | grep -q . \
             || { echo "::error::Nenhum .apk gerado para ${PACKAGE_NAME}"; exit 1; }
