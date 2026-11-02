@@ -1,4 +1,4 @@
-# Workflow do Gitea Actions: compila o pacote telegram-openwrt como .apk
+# Workflow do Gitea Actions: compila os pacotes telegram-openwrt e luci-app-telegramopenwrt como .apk
 # usando o SDK pre-compilado do OpenWrt (baixado de downloads.openwrt.org),
 # em vez de clonar e compilar o buildroot inteiro do zero. O SDK ja vem com
 # toolchain e ferramentas de host prontas, o que evita ter que compilar
@@ -15,7 +15,12 @@
 #   que hospeda mirrors dessas actions. Se sua instancia estiver sem acesso
 #   a internet, troque para "uses: https://SEU_GITEA/actions/checkout@v4"
 #   apontando para mirrors locais.
-# - upload-artifact@v4 requer runner >= v4.4.0 (artifacts nativos do Gitea).
+# - upload-artifact@v3 requer runner >= v4.4.0 (artifacts nativos do Gitea).
+#   v4+ do @actions/artifact se recusa a rodar em instancias detectadas
+#   como GHES (o que inclui o Gitea, dependendo da versao/runner) com
+#   "GHESNotSupportedError". v3 usa o backend antigo, sem essa checagem,
+#   e funciona no Gitea. (No GitHub.com isso nao seria necessario, mas
+#   v3 la ja foi desativado - por isso o workflow do GitHub usa v4.)
 # - O runner precisa de acesso a downloads.openwrt.org para baixar o SDK.
 
 name: Build telegram-openwrt (apk)
@@ -33,26 +38,22 @@ on:
         required: true
         default: '25.12.0'
 
-# Necessario para o step de release (abaixo) poder criar releases e subir
-# o .apk como anexo quando o push for de uma tag.
 permissions:
   contents: write
 
 env:
   PACKAGE_NAME: telegram-openwrt
-  # Pacote e PKGARCH:=all (so shell scripts), entao o SDK/arquitetura
-  # escolhido aqui so precisa ser valido para gerar um ambiente de build;
-  # o .apk resultante roda em qualquer arquitetura.
+  LUCI_PACKAGE_NAME: luci-app-telegramopenwrt
   SDK_BOARD: x86
   SDK_SUBTARGET: '64'
 
 jobs:
   build_apk:
-    name: Build telegram-openwrt .apk (${{ inputs.openwrt_version || '25.12.0' }})
+    name: Build packages (${{ inputs.openwrt_version || '25.12.0' }})
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout telegram-openwrt package repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install build dependencies
@@ -63,7 +64,7 @@ jobs:
             libncurses5-dev libssl-dev python3 rsync \
             unzip zlib1g-dev zstd file wget ca-certificates
 
-      - name: Download OpenWrt SDK (${{ inputs.openwrt_version || '25.12.0' }})
+      - name: Download OpenWrt SDK
         run: |
           VERSION="${{ inputs.openwrt_version || '25.12.0' }}"
           if [ "${VERSION}" = "snapshot" ]; then
@@ -92,57 +93,57 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Drop package into the SDK tree
+      - name: Drop main package into SDK
         run: |
           mkdir -p openwrt_sdk/package/${PACKAGE_NAME}
           cp -R "${GITHUB_WORKSPACE}"/{Makefile,etc,sbin,usr} openwrt_sdk/package/${PACKAGE_NAME}/
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
+      - name: Drop LuCI package into SDK
+        run: |
+          mkdir -p openwrt_sdk/package/feeds/luci
+          cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt" openwrt_sdk/package/feeds/luci/
+          ls -lA openwrt_sdk/package/feeds/luci/luci-app-telegramopenwrt
+
       - name: Generate .config
         working-directory: openwrt_sdk
         run: |
-          # Simbolos CONFIG_PACKAGE_* do OpenWrt preservam hifen (ex:
-          # CONFIG_PACKAGE_libustream-openssl), entao NAO convertemos para
-          # underscore aqui.
           CONFIG_PKG_NAME="CONFIG_PACKAGE_${PACKAGE_NAME}"
+          CONFIG_LUCI_NAME="CONFIG_PACKAGE_${LUCI_PACKAGE_NAME}"
           echo "${CONFIG_PKG_NAME}=m" > .config
+          echo "${CONFIG_LUCI_NAME}=m" >> .config
           make defconfig
-          echo "Selecao do pacote no .config final:"
-          grep "${CONFIG_PKG_NAME}" .config
+          echo "Selecao dos pacotes no .config final:"
+          grep -E "${CONFIG_PKG_NAME}|${CONFIG_LUCI_NAME}" .config
 
-      - name: Compile the package
+      - name: Compile packages
         working-directory: openwrt_sdk
-        run: make package/${PACKAGE_NAME}/compile V=s -j"$(nproc)"
+        run: |
+          make package/${PACKAGE_NAME}/compile V=s -j"$(nproc)"
+          make package/feeds/luci/${LUCI_PACKAGE_NAME}/compile V=s -j"$(nproc)"
 
-      - name: Locate generated .apk
+      - name: Locate generated .apk files
         working-directory: openwrt_sdk
         run: |
           echo "Arquivos .apk gerados:"
-          find bin/packages -name "${PACKAGE_NAME}*.apk" -print
+          find bin/packages -name "*.apk" -print
           find bin/packages -name "${PACKAGE_NAME}*.apk" -print -quit | grep -q . \
             || { echo "::error::Nenhum .apk gerado para ${PACKAGE_NAME}"; exit 1; }
+          find bin/packages -name "${LUCI_PACKAGE_NAME}*.apk" -print -quit | grep -q . \
+            || { echo "::error::Nenhum .apk gerado para ${LUCI_PACKAGE_NAME}"; exit 1; }
 
-      - name: Upload .apk artifact
-        # v4+ do @actions/artifact se recusa a rodar em instancias detectadas
-        # como GHES (o que inclui o Gitea, dependendo da versao/runner) com
-        # "GHESNotSupportedError". v3 usa o backend antigo, sem essa checagem,
-        # e funciona no Gitea. (No GitHub.com isso nao seria necessario, mas
-        # v3 la ja foi desativado - por isso o workflow do GitHub usa v4.)
+      - name: Upload .apk artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.PACKAGE_NAME }}-apk-${{ inputs.openwrt_version || '25.12.0' }}
-          path: openwrt_sdk/bin/packages/*/*/${{ env.PACKAGE_NAME }}*.apk
+          name: telegram-openwrt-apk-${{ inputs.openwrt_version || '25.12.0' }}
+          path: openwrt_sdk/bin/packages/*/*/*.apk
           if-no-files-found: error
 
-      # So roda quando o workflow foi disparado por um push de tag
-      # (ex: "git tag v1.1.1 && git push gitea v1.1.1"). softprops/action-gh-release
-      # fala a API do Gitea tambem (nao so github.com), cria ou atualiza a
-      # release da tag e sobe o .apk como anexo.
-      - name: Publish Release with .apk
+      - name: Publish Release with .apk files
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           name: telegram-openwrt ${{ github.ref_name }}
-          files: openwrt_sdk/bin/packages/*/*/${{ env.PACKAGE_NAME }}*.apk
+          files: openwrt_sdk/bin/packages/*/*/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
