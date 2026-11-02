@@ -62,11 +62,16 @@ jobs:
           mkdir -p openwrt_sdk
           tar --use-compress-program=unzstd -xf "${SDK_FILE}" -C openwrt_sdk --strip-components=1
 
-      - name: Update and install feeds
+      - name: Update feeds
+        working-directory: openwrt_sdk
+        run: ./scripts/feeds update -a
+
+      - name: Install only luci feed (NOT all packages)
         working-directory: openwrt_sdk
         run: |
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+          # Устанавливаем ТОЛЬКО luci feed, а не все пакеты.
+          # Это избегает recursive dependency errors в nginx, mutt, qemu и т.д.
+          ./scripts/feeds install -a -p luci
 
       - name: Drop main package into SDK
         run: |
@@ -74,18 +79,26 @@ jobs:
           cp -R "${GITHUB_WORKSPACE}"/{Makefile,etc,sbin,usr} openwrt_sdk/package/${PACKAGE_NAME}/
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
-      - name: Drop LuCI package into SDK feeds
+      - name: Drop LuCI package into feeds
         run: |
-          # КРИТИЧНО: кладем в feeds/luci/applications/, а не в package/feeds/luci/
-          # чтобы ../../luci.mk в Makefile указывал на feeds/luci/luci.mk
+          # КРИТИЧНО: копируем в feeds/luci/applications/ (не в package/feeds/luci/)
+          # Путь ../../luci.mk в Makefile ведёт к feeds/luci/luci.mk
           mkdir -p openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
-          cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt/"* openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/
+          cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt/"* \
+                openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/
           ls -lA openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
 
-      - name: Register LuCI package in feeds
+      - name: Register LuCI package via feeds install
         working-directory: openwrt_sdk
         run: |
+          # КРИТИЧНО: создаёт symlink package/feeds/luci/luci-app-telegramopenwrt
+          # -> feeds/luci/applications/luci-app-telegramopenwrt
+          # Без этого шага make не найдёт цель package/feeds/luci/.../compile
           ./scripts/feeds install ${LUCI_PACKAGE_NAME}
+          echo "=== Проверка symlink ==="
+          ls -la package/feeds/luci/ | grep telegram || true
+          echo "=== Проверка Makefile ==="
+          cat package/feeds/luci/${LUCI_PACKAGE_NAME}/Makefile | head -15
 
       - name: Generate .config
         working-directory: openwrt_sdk
@@ -98,11 +111,13 @@ jobs:
           echo "Selecao dos pacotes no .config final:"
           grep -E "${CONFIG_PKG_NAME}|${CONFIG_LUCI_NAME}" .config
 
-      - name: Compile packages
+      - name: Compile main package
         working-directory: openwrt_sdk
-        run: |
-          make package/${PACKAGE_NAME}/compile V=s -j"$(nproc)"
-          make package/feeds/luci/${LUCI_PACKAGE_NAME}/compile V=s -j"$(nproc)"
+        run: make package/${PACKAGE_NAME}/compile V=s -j"$(nproc)"
+
+      - name: Compile LuCI package
+        working-directory: openwrt_sdk
+        run: make package/feeds/luci/${LUCI_PACKAGE_NAME}/compile V=s -j"$(nproc)"
 
       - name: Locate generated .apk files
         working-directory: openwrt_sdk
