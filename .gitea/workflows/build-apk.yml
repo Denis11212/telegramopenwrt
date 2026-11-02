@@ -1,28 +1,3 @@
-# Workflow do Gitea Actions: compila os pacotes telegram-openwrt e luci-app-telegramopenwrt como .apk
-# usando o SDK pre-compilado do OpenWrt (baixado de downloads.openwrt.org),
-# em vez de clonar e compilar o buildroot inteiro do zero. O SDK ja vem com
-# toolchain e ferramentas de host prontas, o que evita ter que compilar
-# gcc/libs do zero a cada build (muito mais rapido) e evita depender de
-# variaveis de ambiente para selecionar o target (o SDK ja e fixo para uma
-# arquitetura). Documentacao oficial: https://openwrt.org/docs/guide-developer/start
-#
-# Requisitos no lado do Gitea:
-# - Um runner (act_runner) registrado, com a label usada em "runs-on" abaixo
-#   (ajuste se o seu runner usa outra label).
-# - O runner precisa resolver "uses: actions/checkout@v4" e
-#   "actions/upload-artifact@v4". Por padrao o Gitea resolve nomes curtos
-#   "actions/*" contra https://gitea.com (config [actions] DEFAULT_ACTIONS_URL),
-#   que hospeda mirrors dessas actions. Se sua instancia estiver sem acesso
-#   a internet, troque para "uses: https://SEU_GITEA/actions/checkout@v4"
-#   apontando para mirrors locais.
-# - upload-artifact@v3 requer runner >= v4.4.0 (artifacts nativos do Gitea).
-#   v4+ do @actions/artifact se recusa a rodar em instancias detectadas
-#   como GHES (o que inclui o Gitea, dependendo da versao/runner) com
-#   "GHESNotSupportedError". v3 usa o backend antigo, sem essa checagem,
-#   e funciona no Gitea. (No GitHub.com isso nao seria necessario, mas
-#   v3 la ja foi desativado - por isso o workflow do GitHub usa v4.)
-# - O runner precisa de acesso a downloads.openwrt.org para baixar o SDK.
-
 name: Build telegram-openwrt (apk)
 
 on:
@@ -38,17 +13,12 @@ on:
         required: true
         default: '25.12.0'
 
-# Necessario para o step de release (abaixo) poder criar releases e subir
-# o .apk como anexo quando o push for de uma tag.
 permissions:
   contents: write
 
 env:
   PACKAGE_NAME: telegram-openwrt
   LUCI_PACKAGE_NAME: luci-app-telegramopenwrt
-  # Pacote e PKGARCH:=all (so shell scripts), entao o SDK/arquitetura
-  # escolhido aqui so precisa ser valido para gerar um ambiente de build;
-  # o .apk resultante roda em qualquer arquitetura.
   SDK_BOARD: x86
   SDK_SUBTARGET: '64'
 
@@ -69,7 +39,7 @@ jobs:
             libncurses5-dev libssl-dev python3 rsync \
             unzip zlib1g-dev zstd file wget ca-certificates
 
-      - name: Download OpenWrt SDK (${{ inputs.openwrt_version || '25.12.0' }})
+      - name: Download OpenWrt SDK
         run: |
           VERSION="${{ inputs.openwrt_version || '25.12.0' }}"
           if [ "${VERSION}" = "snapshot" ]; then
@@ -92,27 +62,19 @@ jobs:
           mkdir -p openwrt_sdk
           tar --use-compress-program=unzstd -xf "${SDK_FILE}" -C openwrt_sdk --strip-components=1
 
-      - name: Update feeds
-        working-directory: openwrt_sdk
-        run: ./scripts/feeds update -a
-
-      # CRITICO: Instalamos APENAS o feed luci, nao todos os pacotes.
-      # Isso evita erros de recursive dependency em nginx, curl, gensio, etc.
-      - name: Install luci feed only
+      - name: Update and install feeds
         working-directory: openwrt_sdk
         run: |
-          echo "=== Installing luci feed packages ==="
+          ./scripts/feeds update -a
           ./scripts/feeds install -a -p luci
 
       - name: Drop main package into SDK
         run: |
           mkdir -p openwrt_sdk/package/${PACKAGE_NAME}
           cp -R "${GITHUB_WORKSPACE}"/{Makefile,etc,sbin,usr} openwrt_sdk/package/${PACKAGE_NAME}/
-          echo "=== Main package contents ==="
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
-      # CRITICO: Copiamos o pacote LuCI para feeds/luci/applications/
-      # O caminho ../../luci.mk no Makefile deve apontar para feeds/luci/luci.mk
+      # КРИТИЧНО: Копируем LuCI пакет в feeds/luci/applications/
       - name: Copy LuCI package to feeds directory
         run: |
           mkdir -p openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
@@ -123,31 +85,20 @@ jobs:
           echo "=== Makefile ==="
           cat openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/Makefile
 
-      # CRITICO: Atualizamos o índice feeds para que o novo pacote seja descoberto
-      # Este шаг ОБЯЗАТЕЛЕН после добавления нового пакета в feeds/
-      - name: Update luci feed index
+      # КРИТИЧНО: Создаём symlink вручную
+      # ./scripts/feeds install не работает для локальных пакетов
+      - name: Create symlink for LuCI package
         working-directory: openwrt_sdk
         run: |
-          echo "=== Updating luci feed index ==="
-          ./scripts/feeds update -p luci
-          echo "=== Checking feeds index ==="
-          grep "${LUCI_PACKAGE_NAME}" feeds/luci/index || echo "WARNING: Package not found in feeds index!"
-
-      # CRITICO: Registramos пакет через feeds install
-      # Это создаёт symlink package/feeds/luci/luci-app-telegramopenwrt
-      # -> feeds/luci/applications/luci-app-telegramopenwrt
-      # Без этого шага make не найдёт цель package/feeds/luci/.../compile
-      - name: Register LuCI package in feeds
-        working-directory: openwrt_sdk
-        run: |
-          echo "=== Registering LuCI package ==="
-          ./scripts/feeds install ${LUCI_PACKAGE_NAME}
-          echo "=== Checking symlink ==="
-          ls -la package/feeds/luci/ | grep telegram || echo "ERROR: symlink not found!"
-          echo "=== Verifying Makefile path ==="
-          ls -la package/feeds/luci/${LUCI_PACKAGE_NAME}/Makefile || echo "ERROR: Makefile not accessible!"
-          echo "=== Listing package directory ==="
-          ls -lA package/feeds/luci/${LUCI_PACKAGE_NAME}/ || echo "ERROR: Package directory not found!"
+          echo "=== Creating symlink manually ==="
+          mkdir -p package/feeds/luci
+          ln -sf ../../../feeds/luci/applications/${LUCI_PACKAGE_NAME} package/feeds/luci/${LUCI_PACKAGE_NAME}
+          echo "=== Verifying symlink ==="
+          ls -la package/feeds/luci/${LUCI_PACKAGE_NAME}
+          echo "=== Checking Makefile accessibility ==="
+          ls -la package/feeds/luci/${LUCI_PACKAGE_NAME}/Makefile
+          echo "=== Testing luci.mk path ==="
+          ls -la feeds/luci/luci.mk
 
       - name: Generate .config
         working-directory: openwrt_sdk
@@ -180,21 +131,12 @@ jobs:
             || { echo "::error::Nenhum .apk gerado para ${LUCI_PACKAGE_NAME}"; exit 1; }
 
       - name: Upload .apk artifacts
-        # v4+ do @actions/artifact se recusa a rodar em instancias detectadas
-        # como GHES (o que inclui o Gitea, dependendo da versao/runner) com
-        # "GHESNotSupportedError". v3 usa o backend antigo, sem essa checagem,
-        # e funciona no Gitea. (No GitHub.com isso nao seria necessario, mas
-        # v3 la ja foi desativado - por isso o workflow do GitHub usa v4.)
         uses: actions/upload-artifact@v3
         with:
           name: telegram-openwrt-apk-${{ inputs.openwrt_version || '25.12.0' }}
           path: openwrt_sdk/bin/packages/*/*/*.apk
           if-no-files-found: error
 
-      # So roda quando o workflow foi disparado por um push de tag
-      # (ex: "git tag v1.1.1 && git push gitea v1.1.1"). softprops/action-gh-release
-      # fala a API do Gitea tambem (nao so github.com), cria ou atualiza a
-      # release da tag e sobe o .apk como anexo.
       - name: Publish Release with .apk files
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
