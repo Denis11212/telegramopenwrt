@@ -66,11 +66,12 @@ jobs:
         working-directory: openwrt_sdk
         run: ./scripts/feeds update -a
 
-      - name: Install only luci feed (NOT all packages)
+      # КРИТИЧНО: Устанавливаем ТОЛЬКО luci feed, чтобы избежать recursive dependency ошибок
+      # в сторонних пакетах (nginx-mod-*, curl, gensio и т.д.)
+      - name: Install luci feed only
         working-directory: openwrt_sdk
         run: |
-          # Устанавливаем ТОЛЬКО luci feed, а не все пакеты.
-          # Это избегает recursive dependency errors в nginx, mutt, qemu и т.д.
+          echo "=== Installing luci feed packages ==="
           ./scripts/feeds install -a -p luci
 
       - name: Drop main package into SDK
@@ -79,26 +80,30 @@ jobs:
           cp -R "${GITHUB_WORKSPACE}"/{Makefile,etc,sbin,usr} openwrt_sdk/package/${PACKAGE_NAME}/
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
-      - name: Drop LuCI package into feeds
+      # КРИТИЧНО: Копируем LuCI пакет в feeds/luci/applications/
+      # Путь ../../luci.mk в Makefile должен указывать на feeds/luci/luci.mk
+      - name: Copy LuCI package to feeds directory
         run: |
-          # КРИТИЧНО: копируем в feeds/luci/applications/ (не в package/feeds/luci/)
-          # Путь ../../luci.mk в Makefile ведёт к feeds/luci/luci.mk
           mkdir -p openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
           cp -R "${GITHUB_WORKSPACE}/luci-app-telegramopenwrt/"* \
                 openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/
+          echo "=== LuCI package contents ==="
           ls -lA openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
+          echo "=== Makefile ==="
+          cat openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}/Makefile
 
-      - name: Register LuCI package via feeds install
+      # КРИТИЧНО: Регистрируем пакет через feeds install
+      # Это создаёт symlink package/feeds/luci/luci-app-telegramopenwrt
+      # -> feeds/luci/applications/luci-app-telegramopenwrt
+      - name: Register LuCI package in feeds
         working-directory: openwrt_sdk
         run: |
-          # КРИТИЧНО: создаёт symlink package/feeds/luci/luci-app-telegramopenwrt
-          # -> feeds/luci/applications/luci-app-telegramopenwrt
-          # Без этого шага make не найдёт цель package/feeds/luci/.../compile
+          echo "=== Registering LuCI package ==="
           ./scripts/feeds install ${LUCI_PACKAGE_NAME}
-          echo "=== Проверка symlink ==="
-          ls -la package/feeds/luci/ | grep telegram || true
-          echo "=== Проверка Makefile ==="
-          cat package/feeds/luci/${LUCI_PACKAGE_NAME}/Makefile | head -15
+          echo "=== Checking symlink ==="
+          ls -la package/feeds/luci/ | grep telegram || echo "WARNING: symlink not found!"
+          echo "=== Verifying Makefile path ==="
+          ls -la package/feeds/luci/${LUCI_PACKAGE_NAME}/Makefile || echo "ERROR: Makefile not accessible!"
 
       - name: Generate .config
         working-directory: openwrt_sdk
@@ -107,8 +112,9 @@ jobs:
           CONFIG_LUCI_NAME="CONFIG_PACKAGE_${LUCI_PACKAGE_NAME}"
           echo "${CONFIG_PKG_NAME}=m" > .config
           echo "${CONFIG_LUCI_NAME}=m" >> .config
+          echo "=== Running make defconfig ==="
           make defconfig
-          echo "Selecao dos pacotes no .config final:"
+          echo "=== Package selection in .config ==="
           grep -E "${CONFIG_PKG_NAME}|${CONFIG_LUCI_NAME}" .config
 
       - name: Compile main package
@@ -122,7 +128,7 @@ jobs:
       - name: Locate generated .apk files
         working-directory: openwrt_sdk
         run: |
-          echo "Arquivos .apk gerados:"
+          echo "=== Generated .apk files ==="
           find bin/packages -name "*.apk" -print
           find bin/packages -name "${PACKAGE_NAME}*.apk" -print -quit | grep -q . \
             || { echo "::error::Nenhum .apk gerado para ${PACKAGE_NAME}"; exit 1; }
