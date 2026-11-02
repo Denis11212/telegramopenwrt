@@ -1,0 +1,21 @@
+{
+	"luci-app-telegramopenwrt": {
+		"description": "Grant access to Telegram Scripts for OpenWrt",
+		"read": {
+			"uci": ["telegramopenwrt"],
+			"ubus": {
+				"telegramopenwrt": [
+					"status", "load", "test_bot", "log_tail", "check_tools", "file_read"
+				]
+			}
+		},
+		"write": {
+			"uci": ["telegramopenwrt"],
+			"ubus": {
+				"telegramopenwrt": [
+					"service", "file_write"
+				]
+			}
+		}
+	}
+}
