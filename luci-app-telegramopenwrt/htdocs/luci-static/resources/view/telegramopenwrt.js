@@ -97,7 +97,7 @@ return view.extend({
 	render: function() {
 		var m, s, o;
 		m = new form.Map('telegramopenwrt', _('Telegram Scripts for OpenWrt'),
-			_('Telegram bot integration for OpenWrt. Configure bot settings below. After changing settings, restart the service manually via SSH: <code>/etc/init.d/telegram_bot restart</code>'));
+			_('Telegram bot integration for OpenWrt. Configure bot settings below.'));
 
 		// ========== GLOBAL PARAMETERS ==========
 		s = m.section(form.NamedSection, 'global', 'telegramopenwrt', _('Global Parameters'));
