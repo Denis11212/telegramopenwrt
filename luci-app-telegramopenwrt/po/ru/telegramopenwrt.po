@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-telegramopenwrt\n"
-"PO-Revision-Date: 2026-10-30 12:00+0300\n"
+"PO-Revision-Date: 2026-11-03 12:00+0300\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -15,158 +15,8 @@ msgstr ""
 msgid "Telegram Scripts for OpenWrt"
 msgstr "Telegram Scripts для OpenWrt"
 
-msgid "Telegram bot integration for OpenWrt. Manage bot settings, control the service, and monitor status."
-msgstr "Интеграция Telegram-бота для OpenWrt. Управление настройками бота, контроль службы и мониторинг статуса."
-
-# ============================================================
-# СТАТУС СЛУЖБЫ
-# ============================================================
-msgid "Service Status"
-msgstr "Состояние службы"
-
-msgid "Running"
-msgstr "Запущен"
-
-msgid "Stopped"
-msgstr "Остановлен"
-
-msgid "Start the service"
-msgstr "Запуск службы"
-
-msgid "Start"
-msgstr "Запустить"
-
-msgid "Restart the service"
-msgstr "Перезапуск службы"
-
-msgid "Restart"
-msgstr "Перезапустить"
-
-msgid "Stop the service"
-msgstr "Остановка службы"
-
-msgid "Stop"
-msgstr "Остановить"
-
-msgid "Autostart"
-msgstr "Автозапуск"
-
-msgid "Autostart enabled."
-msgstr "Автозапуск включён."
-
-msgid "Autostart disabled."
-msgstr "Автозапуск выключен."
-
-msgid "Service restarted with new settings."
-msgstr "Служба перезапущена с новыми настройками."
-
-msgid "Service restart requested, but it did not start. Check the logs."
-msgstr "Запрошен перезапуск службы, но она не запустилась. Проверьте логи."
-
-# ============================================================
-# ПРОВЕРКА БОТА И ЛОГИ
-# ============================================================
-msgid "Bot Connection & Logs"
-msgstr "Проверка бота и логи"
-
-msgid "Bot Connection Test"
-msgstr "Проверка соединения с ботом"
-
-msgid "Test Bot Connection"
-msgstr "Проверить соединение с ботом"
-
-msgid "Sends a getMe request to the Telegram Bot API to verify the token and connectivity."
-msgstr "Отправляет запрос getMe к Telegram Bot API для проверки токена и соединения."
-
-msgid "Testing…"
-msgstr "Проверка…"
-
-msgid "Bot connected successfully!"
-msgstr "Бот успешно подключен!"
-
-msgid "Username:"
-msgstr "Имя пользователя:"
-
-msgid "Bot ID:"
-msgstr "ID бота:"
-
-msgid "Bot test failed:"
-msgstr "Ошибка проверки бота:"
-
-msgid "Unknown error"
-msgstr "Неизвестная ошибка"
-
-msgid "Error: "
-msgstr "Ошибка: "
-
-msgid "Service Logs"
-msgstr "Логи службы"
-
-msgid "View Log (Live Tail)"
-msgstr "Просмотр лога (Live Tail)"
-
-msgid "Opens the system log with real-time updates (every 2 seconds)."
-msgstr "Открывает системный лог с обновлениями в реальном времени (каждые 2 секунды)."
-
-msgid "Telegram Bot Log — Live Tail"
-msgstr "Лог Telegram-бота — Live Tail"
-
-msgid "Start Live Tail"
-msgstr "Запустить Live Tail"
-
-msgid "Stop Live Tail"
-msgstr "Остановить Live Tail"
-
-msgid "Live tail active - updating every 2 seconds"
-msgstr "Live tail активен — обновление каждые 2 секунды"
-
-msgid "Live tail paused"
-msgstr "Live tail на паузе"
-
-msgid "Live tail stopped"
-msgstr "Live tail остановлен"
-
-msgid "Source: "
-msgstr "Источник: "
-
-msgid "Failed to read system log: "
-msgstr "Не удалось прочитать системный лог: "
-
-msgid "No telegram_bot entries found in system log. Make sure the service has been started at least once."
-msgstr "В системном логе не найдено записей telegram_bot. Убедитесь, что служба была запущена хотя бы один раз."
-
-msgid "Loading…"
-msgstr "Загрузка…"
-
-msgid "lines"
-msgstr "строк"
-
-msgid "Copy"
-msgstr "Копировать"
-
-msgid "Close"
-msgstr "Закрыть"
-
-msgid "Log copied to clipboard."
-msgstr "Лог скопирован в буфер обмена."
-
-msgid "Copy failed. Please select text manually."
-msgstr "Не удалось скопировать. Выделите текст вручную."
-
-# ============================================================
-# ОПЦИОНАЛЬНЫЕ ЗАВИСИМОСТИ
-# ============================================================
-msgid "Optional Dependencies"
-msgstr "Опциональные зависимости"
-
-msgid "Missing recommended packages:"
-msgstr "Отсутствуют рекомендуемые пакеты:"
-
-msgid "Required for bot connection test. Install:"
-msgstr "Требуется для проверки соединения с ботом. Установка:"
-
-msgid "Required for HTTPS to Telegram API. Install:"
-msgstr "Требуется для HTTPS к Telegram API. Установка:"
+msgid "Telegram bot integration for OpenWrt. Configure bot settings below."
+msgstr "Интеграция Telegram-бота для OpenWrt. Настройте параметры бота ниже."
 
 # ============================================================
 # ГЛОБАЛЬНЫЕ НАСТРОЙКИ
@@ -201,6 +51,9 @@ msgstr "Получите свой Chat ID из"
 msgid "Telegram documentation"
 msgstr "документации Telegram"
 
+msgid "In order for the bot to be able to communicate with you, you must send one message to the bot from the account whose Chat ID you specified."
+msgstr "Для того чтобы бот мог общаться с вами, необходимо отправить одно сообщение боту с аккаунта, Chat ID которого вы указали."
+
 msgid "Must be a number (negative for groups/channels)"
 msgstr "Должно быть числом (отрицательное для групп/каналов)"
 
@@ -215,36 +68,6 @@ msgstr "Файл списка игнорируемых MAC-адресов"
 
 msgid "Path to file with MAC addresses that will not trigger notifications."
 msgstr "Путь к файлу с MAC-адресами, которые не будут вызывать уведомления."
-
-msgid "Edit Ignore List"
-msgstr "Редактировать список игнорирования"
-
-msgid "Edit the file with MAC addresses that will not trigger notifications. One MAC address per line."
-msgstr "Редактирование файла с MAC-адресами, которые не будут вызывать уведомления. Один MAC-адрес на строку."
-
-msgid "Edit MAC Ignore List"
-msgstr "Редактирование списка игнорируемых MAC-адресов"
-
-msgid "One MAC address per line. Devices with these MAC addresses will not trigger DHCP/port notifications from the bot."
-msgstr "Один MAC-адрес на строку. Устройства с этими MAC-адресами не будут вызывать уведомления бота о DHCP/портах."
-
-msgid "File does not exist yet. It will be created when you save."
-msgstr "Файл ещё не существует. Он будет создан при сохранении."
-
-msgid "Failed to read file: "
-msgstr "Не удалось прочитать файл: "
-
-msgid "Failed to save: "
-msgstr "Не удалось сохранить: "
-
-msgid "File saved successfully!"
-msgstr "Файл успешно сохранён!"
-
-msgid "Save"
-msgstr "Сохранить"
-
-msgid "Cancel"
-msgstr "Отмена"
 
 # ============================================================
 # IP-КАМЕРА (с описаниями)
@@ -353,9 +176,6 @@ msgstr "Параметры прокси-сервера (IP-адрес, сеть,
 
 msgid "To change them, edit the file directly via SSH. The switches below only enable/disable the iptables rules."
 msgstr "Для их изменения отредактируйте файл напрямую через SSH. Переключатели ниже лишь включают/выключают правила iptables."
-
-msgid "Current hardcoded values:"
-msgstr "Текущие захардкоженные значения:"
 
 msgid "Enable HTTP Proxy"
 msgstr "Включить HTTP-прокси"
