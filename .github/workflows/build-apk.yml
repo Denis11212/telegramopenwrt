@@ -67,7 +67,7 @@ jobs:
         run: ./scripts/feeds update -a
 
       # КРИТИЧНО: Устанавливаем ТОЛЬКО luci feed, не все пакеты
-      # Это избегает recursive dependency errors в nginx, curl, gensio и т.д.
+      # Это избегает recursive dependency errors в nginx, curl, gensio
       - name: Install luci feed only
         working-directory: openwrt_sdk
         run: |
@@ -82,7 +82,7 @@ jobs:
           ls -lA openwrt_sdk/package/${PACKAGE_NAME}
 
       # КРИТИЧНО: Копируем LuCI пакет в feeds/luci/applications/
-      # Относительный путь ../../luci.mk в Makefile должен указывать на feeds/luci/luci.mk
+      # Путь ../../luci.mk в Makefile должен указывать на feeds/luci/luci.mk
       - name: Copy LuCI package to feeds directory
         run: |
           mkdir -p openwrt_sdk/feeds/luci/applications/${LUCI_PACKAGE_NAME}
@@ -116,14 +116,13 @@ jobs:
           echo "${CONFIG_LUCI_NAME}=m" >> .config
           echo "=== Running make defconfig ==="
           make defconfig
-          echo "=== Selecao dos pacotes no .config final ==="
+          echo "=== Package selection in .config ==="
           grep -E "${CONFIG_PKG_NAME}|${CONFIG_LUCI_NAME}" .config
 
       - name: Compile main package
         working-directory: openwrt_sdk
         run: make package/${PACKAGE_NAME}/compile V=s -j"$(nproc)"
 
-      # КРИТИЧНО: Собираем из package/feeds/luci/ (не из package/)
       - name: Compile LuCI package
         working-directory: openwrt_sdk
         run: make package/feeds/luci/${LUCI_PACKAGE_NAME}/compile V=s -j"$(nproc)"
@@ -131,12 +130,12 @@ jobs:
       - name: Locate generated .apk files
         working-directory: openwrt_sdk
         run: |
-          echo "=== Arquivos .apk gerados ==="
+          echo "=== Generated .apk files ==="
           find bin/packages -name "*.apk" -print
           find bin/packages -name "${PACKAGE_NAME}*.apk" -print -quit | grep -q . \
-            || { echo "::error::Nenhum .apk gerado para ${PACKAGE_NAME}"; exit 1; }
+            || { echo "::error::No .apk generated for ${PACKAGE_NAME}"; exit 1; }
           find bin/packages -name "${LUCI_PACKAGE_NAME}*.apk" -print -quit | grep -q . \
-            || { echo "::error::Nenhum .apk gerado para ${LUCI_PACKAGE_NAME}"; exit 1; }
+            || { echo "::error::No .apk generated for ${LUCI_PACKAGE_NAME}"; exit 1; }
 
       - name: Upload .apk artifacts
         uses: actions/upload-artifact@v4
