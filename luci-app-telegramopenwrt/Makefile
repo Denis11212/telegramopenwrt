@@ -12,7 +12,8 @@ LUCI_DEPENDS:=+telegram-openwrt +luci-base +rpcd +curl +jsonfilter
 PKG_LICENSE:=GPL-2.0
 PKG_MAINTAINER:=Denis11212
 
-# КРИТИЧНО: используем $(TOPDIR) вместо относительного пути ../../
-include $(TOPDIR)/feeds/luci/luci.mk
+# КРИТИЧНО: используем относительный путь ../../luci.mk
+# Это работает когда пакет находится в feeds/luci/applications/
+include ../../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
