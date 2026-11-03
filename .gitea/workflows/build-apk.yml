@@ -108,7 +108,9 @@ jobs:
       - name: Register LuCI package in feeds
         working-directory: openwrt_sdk
         run: |
-          echo "=== Registering LuCI package ==="
+          echo "=== Updating feeds index ==="
+          ./scripts/feeds update -i luci
+          echo "=== Installing LuCI package ==="
           ./scripts/feeds install ${LUCI_PACKAGE_NAME}
           echo "=== Checking symlink ==="
           ls -la package/feeds/luci/ | grep telegram || echo "ERROR: symlink not found!"
