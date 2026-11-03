@@ -15,6 +15,7 @@ define Package/telegram-openwrt
   TITLE:=Telegram for openwrt BOT
   URL:=https://github.com/alexwbaule/telegramopenwrt
   PKGARCH:=all
+  DEPENDS:=+curl +jsonfilter +swconfig
 endef
 
 define Package/telegram-openwrt/description
@@ -206,9 +207,9 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 	/etc/init.d/telegram_bot enabled
 	/etc/init.d/lanports enabled
 	/etc/init.d/hosts_scan enabled
-	/etc/init.d/telegram_bot start
-	/etc/init.d/lanports start
-	/etc/init.d/hosts_scan start
+#	/etc/init.d/telegram_bot start
+#	/etc/init.d/lanports start
+#	/etc/init.d/hosts_scan start
 fi
 exit 0
 endef
